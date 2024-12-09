@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Yanone+Kaffeesatz:wght@200..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rouge+Script&display=swap');
+:root{
+    font-family: "Oswald", sans-serif;
+    background: #ffffff;
+    color: #000000;
+}
+
+html, body{
+    height:100%;
+    margin:0;
+}
+
