@@ -150,7 +150,7 @@ const PantryPro = () => {
       };
       
     fetchItems();
-  }, []);
+  }, [user]);
 
   return (
     <Box
