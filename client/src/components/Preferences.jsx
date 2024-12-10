@@ -59,7 +59,28 @@ const Preferences = ({ isNavbarButton = false }) => {
     }
   }, [isLoaded, user]);
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () =>{ setOpen(true);
+    // Explicitly fetch preferences when opening the dialog
+  if (isLoaded && user) {
+    const fetchPreferences = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/preferences/${user.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data[0]) {
+            setPreferences(data[0]); // Update preferences with fetched data
+            setExistingPreferenceId(data[0]._id); // Update the existingPreferenceId
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching preferences:", error);
+      }
+    };
+    fetchPreferences();
+  }
+  };
   const handleClose = () => setOpen(false);
 
   const handleChange = (key) => (event) => {
