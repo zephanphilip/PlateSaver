@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -12,6 +12,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   Chip,
+  MenuItem,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
@@ -19,37 +20,21 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import {useUser} from '@clerk/clerk-react' 
 
 const PantryPro = () => {
-  const inventory = [
-  { name: "Milk", quantity: "1L", category: "Dairy & Eggs", expires: "2024-12-10", status: "fresh" },
-  { name: "Carrots", quantity: "2kg", category: "Fruits & Vegetables", expires: "2024-12-06", status: "warning" },
-  { name: "Bread", quantity: "1 loaf", category: "Grains & Cereals", expires: "2024-12-01", status: "expired" },
-  { name: "Chicken", quantity: "1kg", category: "Meat & Fish", expires: "2024-12-05", status: "fresh" },
-  { name: "Apples", quantity: "6 pcs", category: "Fruits & Vegetables", expires: "2024-12-15", status: "fresh" },
-  { name: "Cheese", quantity: "500g", category: "Dairy & Eggs", expires: "2024-12-18", status: "fresh" },
-  { name: "Rice", quantity: "5kg", category: "Grains & Cereals", expires: "2025-01-15", status: "fresh" },
-  { name: "Fish", quantity: "2kg", category: "Meat & Fish", expires: "2024-12-07", status: "warning" },
-  { name: "Potatoes", quantity: "3kg", category: "Fruits & Vegetables", expires: "2024-12-11", status: "fresh" },
-  { name: "Eggs", quantity: "12 pcs", category: "Dairy & Eggs", expires: "2024-12-05", status: "expired" },
-  { name: "Cereal", quantity: "750g", category: "Grains & Cereals", expires: "2024-12-25", status: "fresh" },
-  { name: "Yogurt", quantity: "1kg", category: "Dairy & Eggs", expires: "2024-12-08", status: "warning" },
-  { name: "Tomatoes", quantity: "1.5kg", category: "Fruits & Vegetables", expires: "2024-12-04", status: "expired" },
-  { name: "Beef", quantity: "1kg", category: "Meat & Fish", expires: "2024-12-12", status: "fresh" },
-  { name: "Butter", quantity: "250g", category: "Dairy & Eggs", expires: "2024-12-14", status: "fresh" },
-  { name: "Pasta", quantity: "500g", category: "Grains & Cereals", expires: "2025-02-20", status: "fresh" },
-  { name: "Canned Beans", quantity: "3 cans", category: "Packaged Foods", expires: "2025-05-01", status: "fresh" },
-  { name: "Salt", quantity: "1kg", category: "Condiments & Spices", expires: "2026-12-31", status: "fresh" },
-  { name: "Pepper", quantity: "200g", category: "Condiments & Spices", expires: "2025-08-10", status: "fresh" },
-  { name: "Chocolate", quantity: "2 bars", category: "Packaged Foods", expires: "2024-12-20", status: "fresh" },
-  { name: "Garlic", quantity: "1kg", category: "Fruits & Vegetables", expires: "2024-12-13", status: "fresh" },
-  { name: "Onions", quantity: "2kg", category: "Fruits & Vegetables", expires: "2024-12-08", status: "warning" },
-  { name: "Ice Cream", quantity: "2 tubs", category: "Dairy & Eggs", expires: "2024-12-28", status: "fresh" },
-  { name: "Bananas", quantity: "1 dozen", category: "Fruits & Vegetables", expires: "2024-12-03", status: "expired" },
-  { name: "Honey", quantity: "1 bottle", category: "Condiments & Spices", expires: "2026-05-10", status: "fresh" },
-  { name: "Bacon", quantity: "500g", category: "Meat & Fish", expires: "2024-12-09", status: "warning" },
-];
+  const { user, isLoaded } = useUser();
+  const [editItem, setEditItem] = useState(null); // Tracks the item being edited
 
+  const [inventory, setInventory] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newItem, setNewItem] = useState({
+    name: "",
+    quantity: "",
+    category: "",
+    expires: "",
+    status: "fresh",
+  });
 
   const categories = [
     "Fruits & Vegetables",
@@ -72,6 +57,100 @@ const PantryPro = () => {
         return "gray";
     }
   };
+  const handleEditClick = (item) => {
+    setEditItem(item);
+    setShowAddForm(true); // Reuse the add form for editing
+    setNewItem(item);     // Prefill the form with existing item details
+  };
+  
+  const handleAddItem = async () => {
+    if (newItem.name && newItem.quantity && newItem.category && newItem.expires) {
+      const payload = {
+        ...newItem,
+        userId: user.id, // Include user ID
+      };
+      console.log(editItem);
+      console.log(payload);
+      if (editItem) {
+        // Update existing item
+        try {
+          const response = await fetch(`http://localhost:3001/api/items/${editItem._id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setInventory((prev) =>
+              prev.map((item) => (item._id === data.item._id ? data.item : item))
+            );
+          }
+        } catch (error) {
+          console.error("Error updating item:", error);
+        }
+      } else {
+        // Add new item
+        try {
+          const response = await fetch("http://localhost:3001/api/items/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setInventory((prev) => [...prev, data.item]);
+          }
+        } catch (error) {
+          console.error("Error adding item:", error);
+        }
+      }
+  
+      // Reset form
+      setNewItem({
+        name: "",
+        quantity: "",
+        category: "",
+        expires: "",
+        status: "fresh",
+      });
+      setEditItem(null);
+      setShowAddForm(false);
+    }
+  };
+  const handleDeleteItem = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/items/${id}?userId=${user.id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setInventory((prev) => prev.filter((item) => item._id !== id));
+      } else {
+        console.error("Failed to delete item:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  };
+  
+    useEffect(() => {
+      const fetchItems = async () => {
+        try {
+          const response = await fetch(`http://localhost:3001/api/items?userId=${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setInventory(data);
+          }
+        } catch (error) {
+          console.error("Error fetching items:", error);
+        }
+      };
+      
+    fetchItems();
+  }, []);
 
   return (
     <Box
@@ -112,29 +191,98 @@ const PantryPro = () => {
             backgroundColor: "#2a1581",
             "&:hover": { backgroundColor: "#43018f" },
           }}
+          onClick={() => setShowAddForm((prev) => !prev)}
         >
-          Add Item
+          {showAddForm ? "Cancel" : "Add Item"}
         </Button>
       </Box>
 
-      {/* Search & Filter Section */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-          gap: 2,
-        }}
-      >
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Search inventory..."
-          sx={{ bgcolor: "white", borderRadius: 2 }}
-        />
-        <Button variant="outlined">Filter</Button>
-      </Box>
+      {/* Add Item Form */}
+      {showAddForm && (
+        <Box
+          sx={{
+            p: 2,
+            mb: 3,
+            bgcolor: "white",
+            borderRadius: 4,
+            boxShadow: 2,
+          }}
+        >
+          <Typography variant="h5" fontWeight="bold" mb={2}>
+            Add New Item
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Name"
+                variant="outlined"
+                value={newItem.name}
+                onChange={(e) =>
+                  setNewItem((prev) => ({ ...prev, name: e.target.value }))
+                }
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Quantity"
+                type="number"
+                variant="outlined"
+                value={newItem.quantity}
+                onChange={(e) =>
+                  setNewItem((prev) => ({ ...prev, quantity: e.target.value }))
+                }
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                select
+                label="Category"
+                variant="outlined"
+                value={newItem.category}
+                onChange={(e) =>
+                  setNewItem((prev) => ({ ...prev, category: e.target.value }))
+                }
+              >
+                {categories.map((category, index) => (
+                  <MenuItem key={index} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Expiry Date"
+                type="date"
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                value={newItem.expires}
+                onChange={(e) =>
+                  setNewItem((prev) => ({ ...prev, expires: e.target.value }))
+                }
+              />
+            </Grid>
+          </Grid>
+          <Box mt={2} display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#2a1581",
+                "&:hover": { backgroundColor: "#43018f" },
+              }}
+              onClick={handleAddItem}
+            >
+              Save Item
+            </Button>
+          </Box>
+        </Box>
+      )}
 
       {/* Inventory Categories */}
       {categories.map((category) => (
@@ -148,7 +296,7 @@ const PantryPro = () => {
               "&:hover": { bgcolor: "#43018f" },
             }}
           >
-            <Typography variant="h6" fontWeight="bold" sx={{color:"#fff"}}>
+            <Typography variant="h6" fontWeight="bold" sx={{ color: "#fff" }}>
               {category}
             </Typography>
           </AccordionSummary>
@@ -183,13 +331,13 @@ const PantryPro = () => {
                             mt: 2,
                           }}
                         >
-                          <IconButton color="primary">
+                          <IconButton color="primary" onClick={() => handleEditClick(item)}>
                             <EditIcon />
                           </IconButton>
-                          <IconButton color="error">
+                          <IconButton color="error"  onClick={() => handleDeleteItem(item._id)}>
                             <DeleteIcon />
                           </IconButton>
-                          <IconButton color="success">
+                          <IconButton color="success"  onClick={() => handleDeleteItem(item._id)}>
                             <CheckCircleOutlineIcon />
                           </IconButton>
                         </Box>
@@ -201,37 +349,10 @@ const PantryPro = () => {
           </AccordionDetails>
         </Accordion>
       ))}
-
-      {/* Expired Items Section */}
-      <Box
-        sx={{
-          mt: 4,
-          p: 2,
-          border: "2px solid red",
-          borderRadius: 4,
-          bgcolor: "#ffe5e5",
-        }}
-      >
-        <Typography variant="h5" color="error" fontWeight="bold">
-          Expired Items
-        </Typography>
-        {inventory.filter((item) => item.status === "expired").length === 0 ? (
-          <Typography>No expired items.</Typography>
-        ) : (
-          inventory
-            .filter((item) => item.status === "expired")
-            .map((item, index) => (
-              <Chip
-                key={index}
-                label={`${item.name} (${item.quantity})`}
-                color="error"
-                sx={{ m: 1 }}
-              />
-            ))
-        )}
-      </Box>
     </Box>
   );
 };
 
 export default PantryPro;
+
+
