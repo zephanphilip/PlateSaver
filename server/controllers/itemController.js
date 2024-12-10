@@ -19,6 +19,28 @@ const getItem =  async (req, res) => {
     }
   
 }
+//fetch expired item
+const getExpiredItem = async (req, res) => {
+  const { userId } = req.query; // Extract userId from query parameters
+
+  try {
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // Find items for the specific user with status "warning" or "expired"
+    const items = await Item.find({
+      userId,
+      status: { $in: ["warning", "expired"] }, // Filter for specific statuses
+    });
+    console.log(items);
+    res.json(items);
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    res.status(500).json({ message: "Error fetching items", error });
+  }
+};
+
 
 //post items
 const postItem = async (req, res) => {
@@ -96,4 +118,4 @@ const deleteItem = async (req, res) => {
   }
 }
 
-module.exports = {getItem, deleteItem, updateItem, postItem}
+module.exports = {getItem, deleteItem, updateItem, postItem, getExpiredItem}
