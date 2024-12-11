@@ -44,6 +44,23 @@ const PantryPro = () => {
     "Packaged Foods",
     "Condiments & Spices",
   ];
+   // Function to determine item status based on expiry date
+   const determineItemStatus = (expiryDate) => {
+    if (!expiryDate) return "fresh";
+
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(today.getDate() + 3);
+
+    if (expiry < today) {
+      return "expired";
+    } else if (expiry <= threeDaysFromNow) {
+      return "warning";
+    } else {
+      return "fresh";
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -65,8 +82,11 @@ const PantryPro = () => {
   
   const handleAddItem = async () => {
     if (newItem.name && newItem.quantity && newItem.category && newItem.expires) {
+       // Determine status directly here
+       const status = determineItemStatus(newItem.expires);
       const payload = {
         ...newItem,
+        status,
         userId: user.id, // Include user ID
       };
       console.log(editItem);
@@ -142,7 +162,11 @@ const PantryPro = () => {
           const response = await fetch(`http://localhost:3001/api/items?userId=${user.id}`);
           if (response.ok) {
             const data = await response.json();
-            setInventory(data);
+            const updatedInventory = data.map(item => ({
+              ...item,
+              status: determineItemStatus(item.expires)}));
+
+              setInventory(updatedInventory);
           }
         } catch (error) {
           console.error("Error fetching items:", error);
