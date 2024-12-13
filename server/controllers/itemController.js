@@ -22,7 +22,6 @@ const getItem =  async (req, res) => {
 //fetch expired item
 const getExpiredItem = async (req, res) => {
   const { userId } = req.query; // Extract userId from query parameters
-
   try {
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });

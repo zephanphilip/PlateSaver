@@ -1,17 +1,47 @@
 import React from "react";
-import { Box, Button, TextField, Typography, Card } from "@mui/material";
+import { Box, Button, TextField, Typography, CircularProgress } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { motion } from "framer-motion";
 
 const CookLikeAChef = () => {
   const [prompt, setPrompt] = React.useState("");
-  const [result, setResult] = React.useState("Generate Your Magic Recipie!");
+  const [result, setResult] = React.useState(["Generate your Magic recipe!"]);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleGenerateRecipe = () => {
+  const parseRecipe = (text) => {
+    // Split recipe into steps using regex that captures the number and step together
+  const steps = text.match(/(\d+\.\s[^\n]+)/g);
+  
+  // Return the steps as an array, with each step on a new line
+  return steps || [];
+  };
+
+  const handleGenerateRecipe = async () => {
     if (prompt.trim()) {
-      setResult(`Cooking recipe generated for: "${prompt}"`); // Replace with API call logic if needed
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:3001/api/ai/cooklikeachef", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch recipe");
+        }
+
+        const data = await response.json();
+        setResult(parseRecipe(data.recipe || "No recipe found."));
+      } catch (error) {
+        console.error("Error generating recipe:", error);
+        setResult(["Failed to generate the recipe. Try again later."]);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      setResult("Please enter a valid prompt.");
+      setResult(["Please enter a valid prompt."]);
     }
   };
 
@@ -39,55 +69,71 @@ const CookLikeAChef = () => {
       >
         <Button
           startIcon={<ArrowBackIcon sx={{ color: "white" }} />}
-          sx={{backgroundColor: '#2a1581',
-            '&:hover': {
-              backgroundColor: '#43018f',
-            }, fontWeight: "bold" ,color: "white",}}
+          sx={{
+            backgroundColor: "#2a1581",
+            "&:hover": {
+              backgroundColor: "#43018f",
+            },
+            fontWeight: "bold",
+            color: "white",
+          }}
           onClick={() => window.history.back()}
         >
           Back
         </Button>
-        <Typography variant="h2" fontWeight="bold" sx={{ textAlign: "center",color:"WHITE" }}>
+        <Typography
+          variant="h2"
+          fontWeight="bold"
+          sx={{ textAlign: "center", color: "white" }}
+        >
           COOK LIKE A CHEF
         </Typography>
         <Box sx={{ width: "56px" }} /> {/* Placeholder for spacing */}
       </Box>
 
-   
       {/* Middle Section */}
-      <motion.div
+      
+        {loading ? (
+          <CircularProgress color="inherit" />
+        ) : (
+          <Box
         initial={{ boxShadow: "0 0 10px #fe98ec" }}
         animate={{
-          boxShadow: [
-            "0 0 30px #fff",
-            "0 0 40px #fff",
-            "0 0 30px #fff",
-          ],
+          boxShadow: ["0 0 30px #fff", "0 0 40px #fff", "0 0 30px #fff"],
         }}
         transition={{
           duration: 2,
           repeat: Infinity,
           repeatType: "loop",
         }}
-        style={{
-          borderRadius: "16px",
-          width: "90%",
-          maxWidth: "500px",
+        sx={{
+          borderRadius: 2,
+          width: "70%",
+          maxWidth: "1200px",
           minHeight: "150px",
           margin: "auto",
-          padding: "16px",
+          padding: 2,
           backgroundColor: "#ea098c",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          textAlign: "center",
+          textAlign: "left",
         }}
       >
-        <Typography variant="body1" color="white">
-          {result}
-        </Typography>
-      </motion.div>
-
+          {result.map((line, index) => (
+            <Typography
+              key={index}
+              variant={line.match(/^\d+\.\s/) ? "body1" : "h6"} // Different style for steps and sections
+              color="white"
+              sx={{ marginBottom: 1 ,textAlign: "center" }}
+            >
+              {line}
+            </Typography>
+          ))}
+          </Box>
+        )}
+      
 
       {/* Bottom Prompt Section */}
       <Box
@@ -110,28 +156,33 @@ const CookLikeAChef = () => {
             bgcolor: "#ea098c",
             borderRadius: 2,
             "& .MuiInputBase-input::placeholder": {
-      color: "rgba(255, 255, 255, 0.8)", // Placeholder color
-    },
-    "& .MuiInputBase-input": {
-      color: "white", // Text color
-    }, "& .MuiOutlinedInput-root": {
-      "&:hover .MuiOutlinedInput-notchedOutline": {
-        borderColor: "white", // Hover outline color
-      },
-      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: "white", // Focused outline color
-      },
-    },
+              color: "rgba(255, 255, 255, 0.8)",
+            },
+            "& .MuiInputBase-input": {
+              color: "white",
+            },
+            "& .MuiOutlinedInput-root": {
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white",
+              },
+            },
           }}
         />
         <Button
           variant="contained"
-          
           onClick={handleGenerateRecipe}
-          sx={{ borderRadius: 8, px: 4,mb:4 ,backgroundColor: '#2a1581',
-            '&:hover': {
-              backgroundColor: '#43018f',
-            },}}
+          sx={{
+            borderRadius: 8,
+            px: 4,
+            mb: 4,
+            backgroundColor: "#2a1581",
+            "&:hover": {
+              backgroundColor: "#43018f",
+            },
+          }}
         >
           Generate Recipe
         </Button>
