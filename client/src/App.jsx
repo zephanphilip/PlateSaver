@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CartCompanion from './components/CartCompanion';
 import Startup from './components/Startup';
 import InstantTimelyRecipie from './components/InstantTimelyRecipie';
+import Donation from './components/Donation';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="/mealplan" element={<SmartMealPlanner />} />
           <Route path="/whattocook" element={<WhatToCook />} />
           <Route path="/cartcomp" element={<CartCompanion/>}/>
+          <Route path="/donation" element={<Donation/>} />
         </Routes>
     </Router>
   )

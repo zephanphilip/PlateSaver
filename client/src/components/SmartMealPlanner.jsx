@@ -14,23 +14,29 @@ import { useUser } from "@clerk/clerk-react";
 
 const SmartMealPlanner = () => {
   const { user, isLoaded } = useUser();
-  
-  const [mealPlan, setMealPlan] = useState(null);
+  const [mealPlan, setMealPlan] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const fetchMealPlan = async () => {
     setLoading(true);
     if (isLoaded && user) {
-    try {
-      const response = await fetch(`http://localhost:3001/api/ai/mealplan?userId=${user.id}`);
-      const data = await response.json();
-      setMealPlan(data);
-    } catch (error) {
-      console.error('Error fetching meal plan:', error);
-    } finally {
-      setLoading(false);
+      try {
+        const response = await fetch(`http://localhost:3001/api/ai/mealplan?userId=${user.id}`);
+        const data = await response.json();
+        
+        // Check if mealPlan is an array before setting state
+        if (Array.isArray(data.mealPlan)) {
+          setMealPlan(data.mealPlan);
+        } else {
+          console.error('Received meal plan is not an array:', data.mealPlan);
+          setMealPlan([]); // Set an empty array if the response is not valid
+        }
+      } catch (error) {
+        console.error('Error fetching meal plan:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
   };
 
   return (
@@ -95,35 +101,41 @@ const SmartMealPlanner = () => {
       </Button>
 
       {/* Meal Plan Display */}
-      {mealPlan && (
-        <Container maxWidth="md">
-          <Grid container spacing={2}>
-            {mealPlan.map((dayPlan, index) => (
-              <Grid item xs={12} key={index}>
-                <Card 
-                  component={motion.div}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                      {dayPlan.day}
-                    </Typography>
-                    {dayPlan.meals.map((meal, mealIndex) => (
-                      <Typography key={mealIndex} variant="body1">
-                        {meal.type}: {meal.dish} ({meal.calories} cal)
-                      </Typography>
-                    ))}
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      )}
+      {mealPlan.length > 0 ? (
+  <Container maxWidth="md">
+    <Grid container spacing={2}>
+      {mealPlan.map((dayPlan, index) => (
+        <Grid item xs={12} key={index}>
+          <Card
+            component={motion.div}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                {dayPlan.day}
+              </Typography>
+              {Object.entries(dayPlan.meals).map(([mealType, meal], mealIndex) => (
+                <Typography key={mealIndex} variant="body1">
+                  {mealType.charAt(0).toUpperCase() + mealType.slice(1)}: {meal || 'No meal planned'}
+                </Typography>
+              ))}
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  </Container>
+) : (
+  <Typography variant="body1" sx={{ textAlign: 'center' }}>
+    No meal plan available for this week.
+  </Typography>
+)}
+
     </Box>
   );
 };
+
 
 export default SmartMealPlanner;

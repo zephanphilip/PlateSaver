@@ -113,62 +113,122 @@ const CookLikeAChef = async (req, res) => {
     }
   };
 
-  // generate mealplan
+  // generate mealplanconst 
   const generateMealPlan = async (itemNames) => {
-    try {
-      if (!itemNames ) {
-        return "No valid item names provided.";
-      }
-      
-      console.log(itemNames);
-      
-      const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `Generate a detailed weekly meal plan with breakfast, lunch, and dinner, if possible using: ${itemNames.join(', ')}`;
+    const result = await model.generateContent(prompt);
 
-      // prompt
-      const prompt = `Generate meal plan with ingredients: ${itemNames.join(', ')}`;
-      const result = await model.generateContent(prompt);
-  
-      let aiResponse = await result.response.text();
-      aiResponse = sanitizeResponse(aiResponse);
-      console.log(aiResponse);
-      return aiResponse;
-    } catch (error) {
-      if (error.status === 429) {
-        console.warn("Rate limit exceeded. Retrying...");
-        await new Promise((resolve) => setTimeout(resolve, 60000)); // Wait 1 minute
-        return generateMealPlan(itemNames); // Retry the function
-      }
-      console.error('Error in AI completion:', error);
-      throw error;
+    let aiResponse = await result.response.text();
+    aiResponse = sanitizeResponse(aiResponse); // Sanitize if necessary
+    console.log('AI Response:', aiResponse); // Debugging: Log AI response
+
+    // Initialize days and regex for parsing
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const dayRegex = new RegExp(`(${daysOfWeek.join("|")}):`, "gi");
+
+    // Split the response into sections by day
+    const sections = aiResponse.split(dayRegex).slice(1); // Skip the preamble
+    const mealPlan = [];
+
+    for (let i = 0; i < sections.length; i += 2) {
+        const day = sections[i].trim(); // Get the day name
+        const mealsSection = sections[i + 1].trim(); // Get the corresponding meal details
+
+        const dayPlan = {
+            day,
+            meals: {
+                breakfast: "",
+                lunch: "",
+                dinner: ""
+            }
+        };
+
+        // Extract meal details using regex for Breakfast, Lunch, and Dinner
+        const mealRegex = /(Breakfast:.*?)(Lunch:.*?)(Dinner:.*?)(?=\n|$)/is;
+        const mealMatch = mealsSection.match(mealRegex);
+
+        if (mealMatch) {
+            dayPlan.meals.breakfast = mealMatch[1]?.replace(/Breakfast:/i, "").trim() || "";
+            dayPlan.meals.lunch = mealMatch[2]?.replace(/Lunch:/i, "").trim() || "";
+            dayPlan.meals.dinner = mealMatch[3]?.replace(/Dinner:/i, "").trim() || "";
+        }
+
+        mealPlan.push(dayPlan);
     }
-  };
 
-  const MealPlan = async (req,res) => {
+    console.log('Parsed meal plan:', mealPlan); // Debugging: Log parsed meal plan
+    return mealPlan;
+};
+
+  const parseResponse = (aiResponse) => {
+    const days = [];
+    const dayRegex = /(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday):/gi;
+    const sections = aiResponse.split(dayRegex).slice(1); // Skip the first part if it's preamble
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    
+    sections.forEach((section, index) => {
+        const meals = section.split('\n').filter(line => line.trim());
+        const dayPlan = {
+            day: daysOfWeek[index],
+            meals: {
+                breakfast: "",
+                lunch: "",
+                dinner: ""
+            }
+        };
+  
+        meals.forEach((meal) => {
+            if (meal.toLowerCase().startsWith("breakfast:")) {
+                dayPlan.meals.breakfast = meal.replace(/breakfast:/i, "").trim();
+            } else if (meal.toLowerCase().startsWith("lunch:")) {
+                dayPlan.meals.lunch = meal.replace(/lunch:/i, "").trim();
+            } else if (meal.toLowerCase().startsWith("dinner:")) {
+                dayPlan.meals.dinner = meal.replace(/dinner:/i, "").trim();
+            }
+        });
+  
+        days.push(dayPlan);
+    });
+  
+    console.log('Parsed meal plan:', days); // Log to check the final parsed structure
+    return days;
+  };
+  
+  
+
+
+
+  const MealPlan = async (req, res) => {
     const { userId } = req.query;
-    console.log(userId);
     try {
         if (!userId) {
-          return res.status(400).json({ message: "User ID is required" });
+            return res.status(400).json({ message: "User ID is required" });
         }
-    
+  
         const items = await Item.find({
-          userId,
-          category: { $nin: ["Packaged Foods", "others"] },
-          status: { $in: ["warning", "fresh"] },
+            userId,
+            category: { $nin: ["Packaged Foods", "others"] },
+            status: { $in: ["warning", "fresh"] },
         });
-    
+  
         if (items.length === 0) {
-          return res.status(400).json({ message: "No valid items found" });
+            return res.status(400).json({ message: "No valid items found" });
         }
-    
+  
         const itemNames = items.map(item => item.name);
+        console.log('Item names:', itemNames); // Check the list of items
+  
+        const mealplan = await generateMealPlan(itemNames);
+        console.log('Generated meal plan:', mealplan); // Check the generated meal plan data
         
-        const mealplan = await generateMealPlan(itemNames); // Await the async function
-        res.status(200).json({ mealplan }); // Send the resolved recipe
-      } catch (error) {
+        res.status(200).json({ success: true, mealPlan: mealplan });
+    } catch (error) {
         console.error("Error fetching items:", error);
         res.status(500).json({ message: "Error fetching items", error });
-      }
-  }
+    }
+  };
+  
+
 
   module.exports = {CookLikeAChef,WhatToCook,MealPlan};

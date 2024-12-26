@@ -80,8 +80,9 @@ const Navbar = () => {
                 color: '#43018f',
                 fontFamily:'Oswald,sans-serif',
               }}
+              onClick={() => window.location.href = '/donation'}
             >
-              About Us
+              Donation
             </Button>
             <SignedOut>
         <SignInButton mode='modal'><Button 
