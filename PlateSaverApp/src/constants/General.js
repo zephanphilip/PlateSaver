@@ -20,31 +20,31 @@ const MENUS_CONTENTS =[{
     name: 'Cook Like A Chef!',
     desc: 'Discover recipes tailored to your cravings or dietary needs',
     img: 'w1',
-    route: '/cooklikeachef',
+    route: 'CookLikeAChef',
   },
   {
     name: 'What to Cook?',
     desc: 'Discover recipes using only what\'s in your pantry',
     img: 'whatscooking',
-    route: '/whattocook',
+    route: 'WhatToCook',
   },
   {
     name: 'Smart Meal Planner',
     desc: 'Plan your meals with personalized suggestions',
     img: 'mealplan',
-    route: '/mealplan',
+    route: 'SmartMealPlanner',
   },
   {
     name: 'Pantry Pro',
     desc: 'Organize your food inventory and manage your list',
     img: 'cartcomp',
-    route: '/pantrypro',
+    route: 'PantryPro',
   },
   {
     name: 'Cart Companion',
     desc: 'Manage your shopping list and be ready for grocery runs',
     img: 'pantrypro',
-    route: '/cartcomp',
+    route: 'CartCompanion',
   },
 ]
 

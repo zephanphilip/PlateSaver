@@ -1,150 +1,158 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Display } from '../utils';
+import { Seperator } from '../components';
 
 const CookLikeAChef = () => {
   const [prompt, setPrompt] = useState('');
-  const [result, setResult] = useState(['Generate your Magic recipe!']);
+  const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const parseRecipe = (text) => {
-    const steps = text.match(/(\d+\.\s[^\n]+)/g);
-    return steps || [];
-  };
 
   const handleGenerateRecipe = async () => {
     if (prompt.trim()) {
       setLoading(true);
+      console.log('Generating')
       try {
-        const response = await fetch('http://localhost:3001/api/ai/cooklikeachef', {
+        const response = await fetch('http://172.30.14.21:3001/api/ai/cooklikeachef', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ prompt }),
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch recipe');
-        }
-
+  
+        if (!response.ok) throw new Error('Failed to fetch recipe');
         const data = await response.json();
-        setResult(parseRecipe(data.recipe || 'No recipe found.'));
+        setResult([data.recipe]); // Treat the entire recipe as a single string
       } catch (error) {
-        console.error('Error generating recipe:', error);
-        setResult(['Failed to generate the recipe. Try again later.']);
+        console.error('Error:', error);
+        setResult(['Failed to generate recipe. Please try again.']);
       } finally {
         setLoading(false);
       }
-    } else {
-      setResult(['Please enter a valid prompt.']);
     }
   };
+  
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => console.log('Go back')} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.title}>COOK LIKE A CHEF</Text>
-        <View style={{ width: 56 }} /> {/* Placeholder for spacing */}
-      </View>
-
-      <ScrollView contentContainerStyle={styles.resultContainer}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#fff" />
-        ) : (
-          result.map((line, index) => (
-            <Text
-              key={index}
-              style={line.match(/^\d+\.\s/) ? styles.stepText : styles.headerText}
-            >
-              {line}
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle='dark-content' backgroundColor="#fff" translucent/>
+      <Seperator height={StatusBar.currentHeight}/>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <Text style={styles.title}>Cook Like A Chef!</Text>
+        <View style={styles.contentContainer}>
+          {loading && <ActivityIndicator size="large" color="#FF6B6B" style={styles.loader} />}
+          {result.length === 0 ? (
+            <Text style={styles.subtitle}>
+              Discover recipes tailored to your cravings and dietary needs!
             </Text>
-          ))
-        )}
-      </ScrollView>
+          ) : (
+            <ScrollView style={styles.resultScroll}>
+              {result.map((step, index) => (
+      <Text key={index} style={styles.recipeStep}>{step}</Text>
+    ))}
+            </ScrollView>
+          )}
+        </View>
 
-      <View style={styles.promptContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Spicy Biriyani..."
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
-          value={prompt}
-          onChangeText={setPrompt}
-        />
-        <TouchableOpacity style={styles.button} onPress={handleGenerateRecipe}>
-          <Text style={styles.buttonText}>Generate Recipe</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Spicy chicken biriyani"
+            placeholderTextColor="#888"
+            value={prompt}
+            onChangeText={setPrompt}
+            returnKeyType="done"
+          />
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleGenerateRecipe}
+          >
+            <Ionicons name="arrow-forward" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fe98ec',
-    justifyContent: 'space-between',
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  backButton: {
-    padding: 8,
-    backgroundColor: '#2a1581',
-    borderRadius: 4,
+    backgroundColor: 'white',
   },
   title: {
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#FF6B6B',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+  },
+  subtitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+    color: 'black',
+    textAlign: 'left',
+    backgroundColor: '#FFE4E4',
+    padding: 20,
+    borderRadius: 20,
   },
-  resultContainer: {
-    flexGrow: 1,
-    padding: 16,
-    backgroundColor: '#ea098c',
-    borderRadius: 8,
+  resultScroll: {
+    maxHeight: Display.setHeight(70),
+    marginTop: 20,
+    color: 'black',
+    backgroundColor: '#FFE4E4',
+    padding: 15,
+    borderRadius: 20,
   },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  stepText: {
-    color: 'white',
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  promptContainer: {
-    width: '100%',
+  inputContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#FFE4E4',
+    borderRadius: 30,
+    margin: 20,
   },
   input: {
-    width: '90%',
-    maxWidth: 500,
-    padding: 12,
-    backgroundColor: '#ea098c',
-    borderRadius: 8,
-    color: 'white',
+    flex: 1,
+    fontSize: 18,
+    color: 'black',
+    paddingVertical: 8,
   },
-  button: {
-    marginTop: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    backgroundColor: '#2a1581',
-    borderRadius: 8,
+  submitButton: {
+    backgroundColor: '#FFE4E4',
+    padding: 8,
+    borderRadius: 20,
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  loader: {
+    marginTop: 20,
+  },
+  recipeStep: {
     fontSize: 16,
+    color: 'black',
+    marginVertical: 14,
   },
 });
 

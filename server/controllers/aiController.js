@@ -39,12 +39,13 @@ const generateRecipe = async (prompt) => {
   // API Endpoint for Recipe Generation
 const CookLikeAChef = async (req, res) => {
     const { prompt } = req.body;
-  
+    console.log("ghfgh");
     if (!prompt || prompt.trim() === "") {
       return res.status(400).json({ message: "Prompt is required." });
     }
   
     try {
+      console.log(prompt);
       const recipe = await generateRecipe(prompt); // Await the async function
       res.status(200).json({ recipe }); // Send the resolved recipe
     } catch (error) {

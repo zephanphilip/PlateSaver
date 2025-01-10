@@ -2,11 +2,13 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import { Images } from "../constants";
 import { Display } from '../utils';
+import { useNavigation } from '@react-navigation/native';
 
-export default function Menus({name,desc,img}) {
+export default function Menus({name,desc,img,route}) {
+  const navigation = useNavigation();
   return (
     <View style={styles.section}>
-            <TouchableOpacity style={styles.card} activeOpacity={0.8}>
+            <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={() => navigation.navigate(route)}>
               <Image 
                 source={Images[img]}
                 style={styles.image}
