@@ -8,10 +8,13 @@ import {
   ActivityIndicator,
   ScrollView,
   StatusBar,
+  Alert,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useUser } from '@clerk/clerk-expo';
 import { Display } from '../utils';
 import { Seperator } from '../components';
+import { General } from '../constants';
 
 const WhatToCook = () => {
   const { user, isLoaded } = useUser();
@@ -19,50 +22,71 @@ const WhatToCook = () => {
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const response = await fetch(
-          `http://192.168.234.229:3001/api/ai/whattocook?userId=${user.id}`
-        );
+  const fetchRecipe = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${General.API_BASE_URL}api/ai/whattocook?userId=${user.id}`
+      );
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Failed to fetch recipes: ${response.status} ${errorText}`);
-        }
-
-        const data = await response.json();
-
-        if (!data || !data.recipe) {
-          throw new Error('No recipe data received');
-        }
-
-        const recipeObj = {
-          title: 'Recipe',
-          description:
-            typeof data.recipe === 'string'
-              ? data.recipe.split('\n').filter(step => step.trim() !== '')
-              : [],
-        };
-
-        setRecipes([recipeObj]);
-        setLoading(false);
-      } catch (error) {
-        console.error('Detailed error fetching recipes:', error);
-        setLoading(false);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch recipes: ${response.status} ${errorText}`);
       }
-    };
 
-    fetchRecipes();
+      const data = await response.json();
+
+      if (!data || !data.recipe) {
+        throw new Error('No recipe data received');
+      }
+
+      const recipeObj = {
+        title: 'Recipe',
+        description:
+          typeof data.recipe === 'string'
+            ? data.recipe.split('\n').filter(step => step.trim() !== '')
+            : [],
+      };
+
+      setRecipes([recipeObj]);
+      setCurrentRecipeIndex(0);
+      setLoading(false);
+    } catch (error) {
+      console.error('Detailed error fetching recipes:', error);
+      setLoading(false);
+      Alert.alert('Error', 'Failed to generate new recipe. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    fetchRecipe();
   }, [user, isLoaded]);
 
   const handleSkip = () => {
-    setCurrentRecipeIndex((prevIndex) => (prevIndex + 1) % recipes.length);
+    fetchRecipe();
   };
 
   const getCurrentRecipe = () => {
     if (recipes.length === 0) return null;
     return recipes[currentRecipeIndex];
+  };
+
+  const handleCopyRecipe = async () => {
+    const currentRecipe = getCurrentRecipe();
+    if (!currentRecipe) return;
+
+    const recipeText = [
+      currentRecipe.title,
+      '',
+      ...currentRecipe.description
+    ].join('\n');
+
+    try {
+      await Clipboard.setStringAsync(recipeText);
+      Alert.alert('Success', 'Recipe copied to clipboard!');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to copy recipe');
+    }
   };
 
   if (loading) {
@@ -78,12 +102,10 @@ const WhatToCook = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-       <StatusBar barStyle='dark-content' backgroundColor="#fff" translucent/>
+      <StatusBar barStyle='dark-content' backgroundColor="#fff" translucent/>
       <Seperator height={StatusBar.currentHeight}/>
-      {/* Header */}
       <Text style={styles.title}>What to Cook...?</Text>
 
-      {/* Main Content */}
       <View style={styles.mainContent}>
         <ScrollView 
           style={styles.scrollView}
@@ -105,10 +127,14 @@ const WhatToCook = () => {
         </ScrollView>
       </View>
 
-      {/* Skip Button */}
-      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-        <Text style={styles.skipButtonText}>SKIP</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.copyButton} onPress={handleCopyRecipe}>
+          <Text style={[styles.buttonText, { color: '#fff' }]}>COPY RECIPE</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+          <Text style={[styles.buttonText, { color: '#FF6B6B' }]}>SKIP</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -118,7 +144,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
-    
   },
   loadingContainer: {
     flex: 1,
@@ -142,13 +167,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFE5E5',
     borderRadius: 25,
     maxHeight: Display.setHeight(70),
-    marginVertical:20,
-    marginHorizontal:20,
+    marginVertical: 20,
+    marginHorizontal: 20,
     padding: 20,
   },
   scrollView: {
     flex: 1,
-
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -176,17 +200,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 40,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    gap: 10,
+    marginHorizontal: 10,
+  },
+  copyButton: {
+    flex: 1,
+    backgroundColor: '#FF6B6B',
+    padding: 15,
+    borderRadius: 25,
+  },
   skipButton: {
+    flex: 1,
     backgroundColor: '#FFE5E5',
     padding: 15,
     borderRadius: 25,
-
-    width: '100%',
-    marginBottom: 20,
-
   },
-  skipButtonText: {
-    color: '#FF6B6B',
+  buttonText: {
     textAlign: 'center',
     fontSize: 18,
     fontWeight: 'bold',

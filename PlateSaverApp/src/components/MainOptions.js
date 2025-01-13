@@ -1,11 +1,13 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import { Images } from '../constants'
+import { useNavigation } from '@react-navigation/native';
 
 export default function MainOptions() {
+  const navigation = useNavigation();
   return (
    <View style={styles.preferencesContainer}>
-           <TouchableOpacity style={styles.preferenceButton} activeOpacity={0.7}>
+           <TouchableOpacity style={styles.preferenceButton} activeOpacity={0.7} onPress={() => navigation.navigate('Preferences')}>
              <View style={styles.iconCircle}>
                <Image 
                  source={Images.preference}

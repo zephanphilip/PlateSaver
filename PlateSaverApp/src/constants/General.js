@@ -16,6 +16,8 @@ const WELCOME_CONTENTS = [
     },
 ]
 
+const API_BASE_URL = "http://172.20.10.2:3001/"
+
 const MENUS_CONTENTS =[{
     name: 'Cook Like A Chef!',
     desc: 'Discover recipes tailored to your cravings or dietary needs',
@@ -48,4 +50,4 @@ const MENUS_CONTENTS =[{
   },
 ]
 
-export default {WELCOME_CONTENTS,MENUS_CONTENTS}
+export default {WELCOME_CONTENTS,MENUS_CONTENTS,API_BASE_URL}

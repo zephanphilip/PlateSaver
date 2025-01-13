@@ -15,6 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Display } from '../utils';
 import { Seperator } from '../components';
+import { General } from '../constants';
 
 const CookLikeAChef = () => {
   const [prompt, setPrompt] = useState('');
@@ -26,7 +27,7 @@ const CookLikeAChef = () => {
       setLoading(true);
       console.log('Generating')
       try {
-        const response = await fetch('http://172.30.14.21:3001/api/ai/cooklikeachef', {
+        const response = await fetch(`${General.API_BASE_URL}api/ai/cooklikeachef`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
