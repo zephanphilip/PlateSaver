@@ -49,7 +49,7 @@ const Menus = () => {
   
   return (
     <MotionBox
-    sx={{ p: 8,justifyContent:'center',backgroundColor: "#9dccfe" }}>
+    sx={{ px: 4,justifyContent:'center' }}>
       <Typography variant="h3" component="h2" gutterBottom sx={{textAlign:'center',fontFamily: "Yanone Kaffeesatz, sans-serif",fontWeight:'bold',color:'white'}}>
         Explore Our Delicious Menus
       </Typography>

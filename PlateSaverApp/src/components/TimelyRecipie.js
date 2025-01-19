@@ -2,6 +2,7 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import { useUser } from '@clerk/clerk-expo';
 import { format } from 'date-fns';
+import { useNavigation } from '@react-navigation/native';
 
 // Function to get the current time in 'HH:mm' format
 const getCurrentTime = () => {
@@ -30,6 +31,7 @@ const mealTime = () => {
 
 export default function TimelyRecipie() {
   const { user } = useUser();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.welcomeSection}>
@@ -40,7 +42,7 @@ export default function TimelyRecipie() {
         Not sure what to cook for{' '}
         <Text style={styles.highlightText}>{mealTime()}?</Text>
       </Text>
-      <TouchableOpacity style={styles.reassuranceBox} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.reassuranceBox} activeOpacity={0.8} onPress={() => navigation.navigate('TimelyRecipie')}>
         <Text style={styles.reassuranceText}>Don't worry, we got you!</Text>
       </TouchableOpacity>
     </View>

@@ -30,7 +30,9 @@ const Navigators = () => {
       'CartCompanion',
       'PantryPro',
       'InstantRecipe',
-      'Preferences'
+      'Preferences',
+      'TimelyRecipie',
+      
     ];
     
     return hiddenScreens.includes(routeName) ? 'none' : 'flex';

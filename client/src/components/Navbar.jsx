@@ -67,7 +67,7 @@ const Navbar = () => {
               sx={{ 
                 display: { xs: 'none', sm: 'inline-block' }, 
                 fontWeight: 'bold' ,
-                color: '#43018f',
+                color: '#FFE5E5',
                 fontFamily:'Oswald,sans-serif',
               }}
             >
@@ -77,7 +77,7 @@ const Navbar = () => {
               sx={{ 
                 display: { xs: 'none', sm: 'inline-block' }, 
                 fontWeight: 'bold' ,
-                color: '#43018f',
+                color: '#FFE5E5',
                 fontFamily:'Oswald,sans-serif',
               }}
               onClick={() => window.location.href = '/donation'}
@@ -89,7 +89,7 @@ const Navbar = () => {
               sx={{ 
                 display: { xs: 'inline-block', sm: 'inline-block' }, 
                 fontWeight: 'bold' ,
-                color: '#43018f',
+                color: '#FFE5E5',
                 fontFamily:'Oswald,sans-serif',
               }}
             >

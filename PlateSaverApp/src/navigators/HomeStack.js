@@ -1,7 +1,8 @@
 
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react'
-import { Home,CookLikeAChef, WhatToCook, SmartMealPlanner, CartCompanion, PantryPro, InstantRecipie, Preferences } from "../screens";
+import { Home,CookLikeAChef, WhatToCook, SmartMealPlanner, CartCompanion, PantryPro, InstantRecipie, Preferences, Donation } from "../screens";
+import TimelyRecipieScreen from '../screens/TimelyRecipieScreen';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,8 @@ const HomeStack = () => {
         <Stack.Screen name="PantryPro" component={PantryPro} />
         <Stack.Screen name="InstantRecipe" component={InstantRecipie} />
         <Stack.Screen name="Preferences" component={Preferences} />
+        <Stack.Screen name="Donation" component={Donation} />
+        <Stack.Screen name="TimelyRecipie" component={TimelyRecipieScreen} />
       </Stack.Navigator>
     );
   };

@@ -56,7 +56,7 @@ const CookLikeAChef = async (req, res) => {
   
 
 // generate multiple recipies
-  const generateMultipleRecipe = async (itemNames) => {
+  const generateMultipleRecipe = async (itemNames, mealTime) => {
     try {
       if (!itemNames ) {
         return "No valid item names provided.";
@@ -67,7 +67,7 @@ const CookLikeAChef = async (req, res) => {
       const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       // prompt
-      const prompt = `Generate steps for a recipe using these ingredients: ${itemNames.join(', ')}`;
+      const prompt = `Generate steps for a ${mealTime.toLowerCase()} recipe using these ingredients: ${itemNames.join(', ')}`;
       const result = await model.generateContent(prompt);
   
       let aiResponse = await result.response.text();
@@ -78,7 +78,7 @@ const CookLikeAChef = async (req, res) => {
       if (error.status === 429) {
         console.warn("Rate limit exceeded. Retrying...");
         await new Promise((resolve) => setTimeout(resolve, 60000)); // Wait 1 minute
-        return generateMultipleRecipe(itemNames); // Retry the function
+        return generateMultipleRecipe(itemNames, mealTime); // Retry the function
       }
       console.error('Error in AI completion:', error);
       throw error;
@@ -86,13 +86,22 @@ const CookLikeAChef = async (req, res) => {
   };
   
   const WhatToCook = async (req, res) => {
-    const { userId } = req.query; // Extract userId from query parameters
+    const { userId, mealTime } = req.query;
     console.log(userId);
-  
+    console.log(mealTime);
     try {
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
+      if (!mealTime) {
+        return res.status(400).json({ message: "Meal time is required" });
+    }
+
+    // Validate mealTime value
+    const validMealTimes = ['Breakfast', 'Lunch', 'Snacks', 'Dinner', 'Late Night Snacks'];
+    if (!validMealTimes.includes(mealTime)) {
+        return res.status(400).json({ message: "Invalid meal time provided" });
+    }
   
       const items = await Item.find({
         userId,
@@ -106,7 +115,7 @@ const CookLikeAChef = async (req, res) => {
   
       const itemNames = items.map(item => item.name);
       
-      const recipe = await generateMultipleRecipe(itemNames); // Await the async function
+      const recipe = await generateMultipleRecipe(itemNames, mealTime); // Await the async function
       res.status(200).json({ recipe }); // Send the resolved recipe
     } catch (error) {
       console.error("Error fetching items:", error);

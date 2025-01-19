@@ -11,6 +11,7 @@ const itemRouter = require('./routes/itemRouter');
 const cartRouter = require('./routes/cartRouter');
 const aiRouter = require('./routes/aiRouter');
 const donationRouter = require('./routes/donationRouter');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 
 
@@ -30,6 +31,7 @@ app.use('/api/items',itemRouter);
 app.use('/api/cart',cartRouter);
 app.use('/api/ai',aiRouter);
 app.use('/api/donate',donationRouter)
+app.use('/api/notification',notificationRoutes)
 
 
 

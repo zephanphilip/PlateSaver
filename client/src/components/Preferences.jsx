@@ -127,7 +127,7 @@ const Preferences = ({ isNavbarButton = false }) => {
       sx={{
         display: { xs: "none", sm: "inline-block" },
         fontWeight: "bold",
-        color: "#43018f",
+        color: "#FFE5E5",
         fontFamily: "Oswald, sans-serif",
       }}
       onClick={handleOpen}

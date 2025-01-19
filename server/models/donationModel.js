@@ -37,6 +37,28 @@ const donationSchema = new Schema({
       type: Date,
       default: Date.now,
     },
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    recipient: {
+      userId: {
+        type: String,
+        default: null
+      },
+      name: {
+        type: String,
+        default: null
+      },
+      phoneNumber: {
+        type: String,
+        default: null
+      },
+      acceptedAt: {
+        type: Date,
+        default: null
+      }
+    },
   });
 
   module.exports = mongoose.model('Donation', donationSchema)

@@ -17,7 +17,7 @@ export default function MainOptions() {
              <Text style={styles.preferenceText}>Change your{'\n'}Preferences</Text>
            </TouchableOpacity>
    
-           <TouchableOpacity style={styles.preferenceButton} activeOpacity={0.7}>
+           <TouchableOpacity style={styles.preferenceButton} activeOpacity={0.7} onPress={() => navigation.navigate('Donation')}>
              <View style={styles.iconCircle}>
                <Image 
                  source={Images.donation}

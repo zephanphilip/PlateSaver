@@ -26,12 +26,23 @@ const getExpiredItem = async (req, res) => {
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
-
-    // Find items for the specific user with status "warning" or "expired"
+    const currentDate = new Date();
+    const twoDaysFromNow = new Date();
+    twoDaysFromNow.setDate(currentDate.getDate() + 2);
+    
+    // Find items that are expired OR will expire in next 2 days
     const items = await Item.find({
       userId,
-      status: { $in: ["warning", "expired"] }, // Filter for specific statuses
+      $or: [
+        { expires: { $lt: currentDate } },  // already expired
+        { expires: { 
+            $gte: currentDate,              // not expired yet but...
+            $lte: twoDaysFromNow           // will expire within 2 days
+          }
+        }
+      ]
     });
+    
     console.log(items);
     res.json(items);
   } catch (error) {
