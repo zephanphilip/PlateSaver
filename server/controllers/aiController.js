@@ -122,6 +122,7 @@ const CookLikeAChef = async (req, res) => {
       res.status(500).json({ message: "Error fetching items", error });
     }
   };
+  
 
   // generate mealplanconst 
   const generateMealPlan = async (itemNames) => {

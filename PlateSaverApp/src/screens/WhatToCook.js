@@ -15,18 +15,46 @@ import { useUser } from '@clerk/clerk-expo';
 import { Display } from '../utils';
 import { Seperator } from '../components';
 import { General } from '../constants';
+import { format } from 'date-fns';
+
+// Function to get the current time in 'HH:mm' format
+const getCurrentTime = () => {
+  const currentTime = format(new Date(), 'HH:mm');
+  return currentTime;
+};
+
+// Function to determine the meal type based on the current time
+const mealTime = () => {
+  const time = getCurrentTime();
+  const [hours, minutes] = time.split(':').map(Number);
+  const currentMinutes = hours * 60 + minutes;
+
+  if (currentMinutes >= 300 && currentMinutes < 720) {
+    return 'Breakfast';
+  } else if (currentMinutes >= 720 && currentMinutes < 900) {
+    return 'Lunch';
+  } else if (currentMinutes >= 900 && currentMinutes < 1140) {
+    return 'Snacks';
+  } else if (currentMinutes >= 1140 && currentMinutes < 1440) {
+    return 'Dinner';
+  } else {
+    return 'Late Night Snacks';
+  }
+};
+
 
 const WhatToCook = () => {
   const { user, isLoaded } = useUser();
   const [recipes, setRecipes] = useState([]);
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [currentMealTime, setCurrentMealTime] = useState(mealTime());
 
   const fetchRecipe = async () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `${General.API_BASE_URL}api/ai/whattocook?userId=${user.id}`
+        `${General.API_BASE_URL}api/ai/whattocook?userId=${user.id}&mealTime=${currentMealTime}`
       );
 
       if (!response.ok) {
@@ -59,6 +87,8 @@ const WhatToCook = () => {
   };
 
   useEffect(() => {
+    const mealTimes = mealTime();
+    setCurrentMealTime(mealTimes);
     fetchRecipe();
   }, [user, isLoaded]);
 
