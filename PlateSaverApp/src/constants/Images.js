@@ -9,4 +9,7 @@ export default {
     mealplan: require('../assets/images/mealplan.jpg'),
     cartcomp: require('../assets/images/cartcompaninon.jpeg'),
     pantrypro: require('../assets/images/pantrypro.jpeg'),
+    i1: require('../assets/images/i1.jpg'),
+    i2: require('../assets/images/i2.jpg'),
+    i3: require('../assets/images/i3.jpg'),
 }

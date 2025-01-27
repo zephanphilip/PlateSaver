@@ -9,6 +9,7 @@ const itemSchema = new Schema({
     category: { type: String, required: true },
     expires: { type: Date, required: true },
     status: { type: String, enum: ["fresh", "warning", "expired"], default: "fresh" },
+    notified: { type: Boolean, default: false}
 })
 
 module.exports = mongoose.model('Item', itemSchema)

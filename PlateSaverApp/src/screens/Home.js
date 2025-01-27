@@ -11,6 +11,7 @@ export default function Home() {
    useEffect(() => {
     if (isLoaded && user) {  // Only run if user is loaded and exists
       fetchItems();
+      
       registerForPushNotificationsAsync();
     }
   }, [user, isLoaded]);

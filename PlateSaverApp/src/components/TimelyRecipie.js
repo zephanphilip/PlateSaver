@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import React from 'react';
 import { useUser } from '@clerk/clerk-expo';
 import { format } from 'date-fns';
@@ -38,6 +38,7 @@ export default function TimelyRecipie() {
       <Text style={styles.greeting}>
         Hello, {user?.firstName || 'Guest'}!
       </Text>
+      
       <Text style={styles.questionText}>
         Not sure what to cook for{' '}
         <Text style={styles.highlightText}>{mealTime()}?</Text>
@@ -53,6 +54,11 @@ const styles = StyleSheet.create({
   welcomeSection: {
     marginBottom: 14,
     paddingHorizontal: 15,
+  },
+  profileIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   greeting: {
     fontSize: 18,

@@ -1,22 +1,22 @@
 const WELCOME_CONTENTS = [
     {
-        image: 'w1',
-        title: 'sample data 1',
-        content: 'blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah'
+        image: 'i1',
+        title: 'Smart Meal Management',
+        content: 'Plan your week effortlessly with AI-driven meal plans, find recipes instantly using your pantry items, and explore exciting new dishes tailored to your tastes.'
     },
     {
-        image: 'w1',
-        title: 'sample data 2',
-        content: 'blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah'
+        image: 'i2',
+        title: 'Food Inventory & Shopping',
+        content: 'Track your pantry with ease, avoid food waste with inventory tools, and create smart shopping lists to simplify grocery trips.'
     },
     {
-        image: 'w1',
-        title: 'sample data 3',
-        content: 'blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah'
+        image: 'i3',
+        title: 'Community Sharing',
+        content: 'Donate surplus food to those in need or claim available food nearby, fostering a community committed to reducing food waste.'
     },
 ]
 
-const API_BASE_URL = "http://172.20.10.3:3001/"
+const API_BASE_URL = "http://172.30.29.4:3001/"
 
 const MENUS_CONTENTS =[{
     name: 'Cook Like A Chef!',

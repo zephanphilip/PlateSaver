@@ -12,7 +12,7 @@ const sanitizeResponse = (response) => {
 //Recipe Generation Function
 const generateRecipe = async (prompt) => {
     try {
-        console.log(prompt);
+        
       if (!prompt) return "Please provide a valid prompt.";
   
       const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -39,7 +39,6 @@ const generateRecipe = async (prompt) => {
   // API Endpoint for Recipe Generation
 const CookLikeAChef = async (req, res) => {
     const { prompt } = req.body;
-    console.log("ghfgh");
     if (!prompt || prompt.trim() === "") {
       return res.status(400).json({ message: "Prompt is required." });
     }
@@ -62,7 +61,7 @@ const CookLikeAChef = async (req, res) => {
         return "No valid item names provided.";
       }
       
-      console.log(itemNames);
+      
       
       const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -87,8 +86,6 @@ const CookLikeAChef = async (req, res) => {
   
   const WhatToCook = async (req, res) => {
     const { userId, mealTime } = req.query;
-    console.log(userId);
-    console.log(mealTime);
     try {
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });

@@ -80,10 +80,10 @@ export async function checkExpiryAndNotify(items, userEmail) {
   items.forEach(async (item) => {
     const expiryDate = new Date(item.expires);
     let message = '';
-
-    if (expiryDate < currentDate) {
+    console.log('hy');
+    if ((expiryDate < currentDate)&&(!item.notified)) {
       message = `${item.name} has expired!`;
-    } else if (expiryDate <= twoDaysFromNow) {
+    } else if ((expiryDate <= twoDaysFromNow)&&(!item.notified)) {
       const daysLeft = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
       message = `${item.name} will expire in ${daysLeft} day${daysLeft > 1 ? 's' : ''}!`;
     }
@@ -91,10 +91,32 @@ export async function checkExpiryAndNotify(items, userEmail) {
     if (message) {
       await Promise.all([
         scheduleNotification(message, item),
-        sendEmailNotification(userEmail, message, item)
+        sendEmailNotification(userEmail, message, item),
+        updateNotificationStatus(item._id)
       ]);
     }
   });
+}
+
+async function updateNotificationStatus(itemId) {
+  try {
+    const response = await fetch(`${General.API_BASE_URL}api/items/update-notification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ itemId })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to update notification status');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating notification status:', error);
+    throw error;
+  }
 }
 
 // Schedule a notification

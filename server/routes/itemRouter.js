@@ -1,6 +1,6 @@
 const express = require('express');
 
-const {getItem,postItem,updateItem,deleteItem,getExpiredItem} = require('../controllers/itemController');
+const {getItem,postItem,updateItem,deleteItem,getExpiredItem, updateNotified} = require('../controllers/itemController');
 
 const router = express.Router();
 
@@ -9,5 +9,6 @@ router.post('/',postItem);
 router.put("/:id",updateItem);
 router.delete("/:id",deleteItem);
 router.get('/getexpired',getExpiredItem);
+router.post('/update-notification',updateNotified);
 
 module.exports = router;
