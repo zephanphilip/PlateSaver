@@ -50,8 +50,8 @@ const Navbar = () => {
           width: '100%', 
           backgroundColor: 'transparent',
           fontFamily:'Oswald,sans-serif',
-           //backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
-         backdropFilter: 'blur(10px)', // Blur effect
+          
+         backdropFilter: 'blur(10px)', 
           fontWeight: 'bold',
           transition: 'transform 0.2s ease-in-out'
         }}
@@ -72,6 +72,17 @@ const Navbar = () => {
               }}
             >
               <Preferences isNavbarButton={true} />
+            </Button>
+            <Button 
+              sx={{ 
+                display: { xs: 'none', sm: 'inline-block' }, 
+                fontWeight: 'bold' ,
+                color: '#FFE5E5',
+                fontFamily:'Oswald,sans-serif',
+              }}
+              onClick={() => window.location.href = '/adoption'}
+            >
+              Adoption
             </Button>
             <Button 
               sx={{ 
@@ -126,9 +137,8 @@ const Navbar = () => {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Home</MenuItem>
-              <MenuItem onClick={handleClose}>About Us</MenuItem>
-              <MenuItem onClick={handleClose}>Contact Us</MenuItem>
+              <MenuItem onClick={() => window.location.href = '/donation'}>Donation</MenuItem>
+              <MenuItem  onClick={() => window.location.href = '/adoption'}>Adoption</MenuItem>
             </Menu>
           </div>
         </Toolbar>

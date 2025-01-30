@@ -9,6 +9,7 @@ import CartCompanion from './components/CartCompanion';
 import Startup from './components/Startup';
 import InstantTimelyRecipie from './components/InstantTimelyRecipie';
 import Donation from './components/Donation';
+import Adoption from './components/Adoption';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/whattocook" element={<WhatToCook />} />
           <Route path="/cartcomp" element={<CartCompanion/>}/>
           <Route path="/donation" element={<Donation/>} />
+          <Route path="/adoption" element={<Adoption/>}/>
         </Routes>
     </Router>
   )

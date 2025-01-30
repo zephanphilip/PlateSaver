@@ -7,6 +7,9 @@ const donationSchema = new Schema({
       type: String,
       required: true,
     },
+    email:{
+      type: String,
+    },
     foodDetails: {
       type: String,
       required: true,
@@ -53,6 +56,16 @@ const donationSchema = new Schema({
       phoneNumber: {
         type: String,
         default: null
+      },
+      location: {
+        latitude: {
+          type: Number,
+       
+        },
+        longitude: {
+          type: Number,
+         
+        },
       },
       acceptedAt: {
         type: Date,

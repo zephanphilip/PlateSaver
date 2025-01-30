@@ -2,7 +2,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const Item = require('../models/itemModel');
 
-
+console.log("ai controller used");
 // Function to remove * and # from the AI response
 const sanitizeResponse = (response) => {
     return response.replace(/[*#]/g, '');
@@ -11,6 +11,7 @@ const sanitizeResponse = (response) => {
 
 //Recipe Generation Function
 const generateRecipe = async (prompt) => {
+  console.log("ai used");
     try {
         
       if (!prompt) return "Please provide a valid prompt.";
@@ -38,6 +39,7 @@ const generateRecipe = async (prompt) => {
   
   // API Endpoint for Recipe Generation
 const CookLikeAChef = async (req, res) => {
+  console.log("ai used");
     const { prompt } = req.body;
     if (!prompt || prompt.trim() === "") {
       return res.status(400).json({ message: "Prompt is required." });
@@ -56,6 +58,7 @@ const CookLikeAChef = async (req, res) => {
 
 // generate multiple recipies
   const generateMultipleRecipe = async (itemNames, mealTime) => {
+    console.log("ai used");
     try {
       if (!itemNames ) {
         return "No valid item names provided.";
@@ -85,6 +88,7 @@ const CookLikeAChef = async (req, res) => {
   };
   
   const WhatToCook = async (req, res) => {
+    console.log("ai used");
     const { userId, mealTime } = req.query;
     try {
       if (!userId) {
@@ -123,6 +127,7 @@ const CookLikeAChef = async (req, res) => {
 
   // generate mealplanconst 
   const generateMealPlan = async (itemNames) => {
+    console.log("ai used");
     const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Generate a detailed weekly meal plan with breakfast, lunch, and dinner, if possible using: ${itemNames.join(', ')}`;
     const result = await model.generateContent(prompt);
@@ -208,6 +213,7 @@ const CookLikeAChef = async (req, res) => {
 
 
   const MealPlan = async (req, res) => {
+    console.log("ai used");
     const { userId } = req.query;
     try {
         if (!userId) {
