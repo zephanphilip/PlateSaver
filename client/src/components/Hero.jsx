@@ -172,7 +172,8 @@ const Hero = () => {
             color:'#FF6B6B',
             backgroundColor: '#FFE5E5',
             '&:hover': {
-              backgroundColor: '#43018f',
+              backgroundColor: '#FF6B6B',
+              color:'#FFE5E5'
             },
             mt: 2,
           }}

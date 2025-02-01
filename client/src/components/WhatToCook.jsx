@@ -304,7 +304,7 @@ const WhatToCook = () => {
           </Box>
         ) : (
           <Typography variant="h6" sx={{ color: "#FF6B6B" }}>
-            No recipes available.
+            Add items to your pantry.
           </Typography>
         )}
         
