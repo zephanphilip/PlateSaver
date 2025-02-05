@@ -3,6 +3,9 @@ import { Box, Button, TextField, Typography, CircularProgress, IconButton } from
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { motion } from "framer-motion";
+import General from "../constants/General";
+
+
 
 const CookLikeAChef = () => {
   const [prompt, setPrompt] = React.useState("");
@@ -22,7 +25,7 @@ const CookLikeAChef = () => {
     if (prompt.trim()) {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:3001/api/ai/cooklikeachef", {
+        const response = await fetch(`${General.API_BASE_URL}api/ai/cooklikeachef`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

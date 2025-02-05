@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Card, CardContent, CardHeader, Typography, Button, Input, Alert, CircularProgress, Slider } from "@mui/material";
 import { MapPin, Clock, Info, X, Loader2, Navigation } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
+import General from "../constants/General";
 
 const Adoption = () => {
   // All state and function declarations remain the same
@@ -9,6 +10,7 @@ const Adoption = () => {
   const [location, setLocation] = useState(null);
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingConfirmation, setLoadingConfirmation] = useState(false)
   const [error, setError] = useState(null);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -63,7 +65,7 @@ const Adoption = () => {
   const fetchDonations = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/donate/available/${user.id}`
+        `${General.API_BASE_URL}api/donate/available/${user.id}`
       );
       if (!response.ok) throw new Error("Failed to fetch donations.");
       const data = await response.json();
@@ -115,7 +117,7 @@ const Adoption = () => {
 
   const sendEmailNotification= async(userEmail, message, data) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/notification/senddonationemail`, {
+      const response = await fetch(`${General.API_BASE_URL}api/notification/senddonationemail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,6 +136,7 @@ const Adoption = () => {
     }
   }
   const handleAccept = async (donationId) => {
+    setLoadingConfirmation(true);
     try {
        // Find the donation details before making the acceptance request
        const donation = donations.find(d => d._id === donationId);
@@ -142,7 +145,7 @@ const Adoption = () => {
          return;
        }
       const response = await fetch(
-        `http://localhost:3001/api/donate/${donationId}/accept`,
+        `${General.API_BASE_URL}api/donate/${donationId}/accept`,
         {
           method: "POST",
           headers: {
@@ -192,12 +195,15 @@ const Adoption = () => {
           phoneNumber: "",
           location: location,
         });
+        setLoadingConfirmation(false);
       } else {
         const data = await response.json();
         setError(data.message);
+        setLoadingConfirmation(false);
       }
     } catch (err) {
       setError("Failed to accept donation");
+      setLoadingConfirmation(false);
     }
   };
 
@@ -286,7 +292,8 @@ const Adoption = () => {
             fontWeight: "bold",
           }}
         >
-          Note : You cannot CANCEL an adoption after you accept it.
+         Adoption & Donation Policy:
+         To maintain fairness and prevent misuse, once you accept a food adoption, you cannot cancel it. Similarly, once you submit a food donation, it cannot be revoked. This policy ensures that food commitments are honored, preventing disruptions that could negatively impact recipients, especially vulnerable groups such as old age homes. Since food is a vital resource, reliability is essential to avoid waste and ensure those in need receive the help they expect. Please commit responsibly before confirming an adoption or donation.
         </Typography>
       </Box>
 
@@ -424,7 +431,7 @@ const Adoption = () => {
                           '&:after': { borderColor: "#FF6B6B" },
                         }}
                       />
-                      <Box sx={{ display: "flex", gap: 1 }}>
+                      {loadingConfirmation ? (<CircularProgress sx={{ color: "#FF6B6B" }}/>) : (<Box sx={{ display: "flex", gap: 1 }}>
                         <Button
                           variant="contained"
                           onClick={() => handleAccept(donation._id)}
@@ -451,23 +458,26 @@ const Adoption = () => {
                         >
                           Cancel
                         </Button>
-                      </Box>
+                      </Box>)}
                     </Box>
                   ) : (
-                    <Button
-                      variant="contained"
-                      sx={{ 
-                        mt: 2,
-                        backgroundColor: "#FF6B6B",
-                        width: "100%",
-                        '&:hover': {
-                          backgroundColor: "#ff5252"
-                        }
-                      }}
-                      onClick={() => setSelectedDonation(donation._id)}
-                    >
-                      Accept Donation
-                    </Button>
+                    
+                      <Button
+                        variant="contained"
+                        sx={{ 
+                          mt: 2,
+                          width: "100%",
+                          backgroundColor: "#FF6B6B",
+                          "&:hover": {
+                            backgroundColor: "#FF5252",
+                          },
+                        }}
+                        onClick={() => setSelectedDonation(donation._id)}
+                      >
+                        Accept Donation
+                      </Button>
+                    
+                    
                   )}
                 </Box>
               </CardContent>

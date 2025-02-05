@@ -13,6 +13,7 @@ import {
   Alert,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import General from "../constants/General";
 
 const StyledButton = styled(Button)({
   backgroundColor: "#FF6B6B",
@@ -65,7 +66,7 @@ const UserDonations = ({ refreshTrigger }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:3001/api/donate/${user.id}`);
+      const response = await fetch(`${General.API_BASE_URL}api/donate/${user.id}`);
       if (!response.ok) throw new Error("Failed to fetch donations.");
       const data = await response.json();
       setDonations(data.donations);

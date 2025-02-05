@@ -1,12 +1,50 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const Item = require('../models/itemModel');
+const Preferences = require('../models/preferencesModel');
 
 console.log("ai controller used");
 // Function to remove * and # from the AI response
 const sanitizeResponse = (response) => {
     return response.replace(/[*#]/g, '');
 };
+
+
+
+
+
+
+// Get preferences with a default "no preference" fallback
+const getPreferences = async (userId) => {
+  try {
+    const preferences = await Preferences.findOne({ username: userId });
+
+    // If no preferences found, return a default preference object
+    return preferences || {
+      dietary: "No Restrictions",
+      cuisine: "Any",
+      spiceLevel: "Medium",
+      cookingTime: "Any",
+      culinarySkills: "Beginner",
+      allergies: "None"
+    };
+  } catch (err) {
+    console.error("Error fetching preferences:", err);
+    // Return default preferences if there's an error
+    return {
+      dietary: "No Restrictions",
+      cuisine: "Any",
+      spiceLevel: "Medium",
+      cookingTime: "Any",
+      culinarySkills: "Beginner",
+      allergies: "None"
+    };
+  }
+};
+
+
+
+
 
 
 //Recipe Generation Function
@@ -57,7 +95,7 @@ const CookLikeAChef = async (req, res) => {
   
 
 // generate multiple recipies
-  const generateMultipleRecipe = async (itemNames, mealTime) => {
+  const generateMultipleRecipe = async (itemNames, mealTime, preferences) => {
     console.log("ai used");
     try {
       if (!itemNames ) {
@@ -69,8 +107,19 @@ const CookLikeAChef = async (req, res) => {
       const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       // prompt
-      const prompt = `Generate steps for a ${mealTime.toLowerCase()} recipe using these ingredients: ${itemNames.join(', ')}`;
-      const result = await model.generateContent(prompt);
+      const prompt = `
+      Generate a ${mealTime.toLowerCase()} recipe using these ingredients: ${itemNames.join(', ')}
+      
+      Preferences to Consider:
+      - Dietary Restrictions: ${preferences.dietary}
+      - Cuisine Type: ${preferences.cuisine}
+      - Spice Level: ${preferences.spiceLevel}
+      - Cooking Time: ${preferences.cookingTime}
+      - Culinary Skill Level: ${preferences.culinarySkills}
+      - Allergies to Avoid: ${preferences.allergies}`;
+
+
+     const result = await model.generateContent(prompt);
   
       let aiResponse = await result.response.text();
       aiResponse = sanitizeResponse(aiResponse);
@@ -90,6 +139,7 @@ const CookLikeAChef = async (req, res) => {
   const WhatToCook = async (req, res) => {
     console.log("ai used");
     const { userId, mealTime } = req.query;
+    
     try {
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
@@ -97,7 +147,7 @@ const CookLikeAChef = async (req, res) => {
       if (!mealTime) {
         return res.status(400).json({ message: "Meal time is required" });
     }
-
+    const preferences = await getPreferences(userId);
     // Validate mealTime value
     const validMealTimes = ['Breakfast', 'Lunch', 'Snacks', 'Dinner', 'Late Night Snacks'];
     if (!validMealTimes.includes(mealTime)) {
@@ -116,7 +166,7 @@ const CookLikeAChef = async (req, res) => {
   
       const itemNames = items.map(item => item.name);
       
-      const recipe = await generateMultipleRecipe(itemNames, mealTime); // Await the async function
+      const recipe = await generateMultipleRecipe(itemNames, mealTime, preferences); // Await the async function
       res.status(200).json({ recipe }); // Send the resolved recipe
     } catch (error) {
       console.error("Error fetching items:", error);
@@ -126,10 +176,10 @@ const CookLikeAChef = async (req, res) => {
   
 
   // generate mealplanconst 
-  const generateMealPlan = async (itemNames) => {
+  const generateMealPlan = async (itemNames, preferences) => {
     console.log("ai used");
     const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `Generate a detailed weekly meal plan with breakfast, lunch, and dinner, if possible using: ${itemNames.join(', ')}`;
+    const prompt = `Generate a detailed weekly meal plan with breakfast, lunch, and dinner with Cooking Time ${preferences.cookingTime}(but don't mention in recipie),Cuisine Type ${preferences.cuisine},Spice Level ${preferences.spiceLevel}(if possible), and if possible using: ${itemNames.join(', ')}`;
     const result = await model.generateContent(prompt);
 
     let aiResponse = await result.response.text();
@@ -219,7 +269,8 @@ const CookLikeAChef = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ message: "User ID is required" });
         }
-  
+        const preferences = await getPreferences(userId);
+
         const items = await Item.find({
             userId,
             category: { $nin: ["Packaged Foods", "others"] },
@@ -233,7 +284,7 @@ const CookLikeAChef = async (req, res) => {
         const itemNames = items.map(item => item.name);
         console.log('Item names:', itemNames); // Check the list of items
   
-        const mealplan = await generateMealPlan(itemNames);
+        const mealplan = await generateMealPlan(itemNames,preferences);
         console.log('Generated meal plan:', mealplan); // Check the generated meal plan data
         
         res.status(200).json({ success: true, mealPlan: mealplan });
@@ -246,3 +297,4 @@ const CookLikeAChef = async (req, res) => {
 
 
   module.exports = {CookLikeAChef,WhatToCook,MealPlan};
+

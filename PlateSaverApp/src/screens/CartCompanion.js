@@ -99,7 +99,7 @@ const CartCompanion = ({ navigation }) => {
             {inventory.map((item, index) => (
               <Picker.Item
                 key={index}
-                label={`${item.name} - Expires in ${item.daysToExpiry} days`}
+                label={`${item.name} - Expiry Date: ${new Date(item.expires).toLocaleDateString('en-GB')} `}
                 value={JSON.stringify(item)}
               />
             ))}

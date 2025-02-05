@@ -80,9 +80,9 @@ export default function TimelyRecipieScreen() {
        setCurrentRecipeIndex(0);
        setLoading(false);
      } catch (error) {
-       console.error('Detailed error fetching recipes:', error);
+      
        setLoading(false);
-       Alert.alert('Error', 'Failed to generate new recipe. Please try again.');
+       Alert.alert('Error', 'Failed to generate new recipe.  Try adding items to your Pantry.');
      }
    };
  

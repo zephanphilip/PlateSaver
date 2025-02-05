@@ -15,8 +15,11 @@ import {
 import { useUser } from "@clerk/clerk-expo";
 import { General } from '../constants';
 import { Seperator } from '../components';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
-const SmartMealPlanner = ({ navigation }) => {
+const SmartMealPlanner = ({}) => {
+  const navigation = useNavigation();
   const { user, isLoaded } = useUser();
   const [mealPlan, setMealPlan] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,7 +34,7 @@ const SmartMealPlanner = ({ navigation }) => {
         if (Array.isArray(data.mealPlan)) {
           setMealPlan(data.mealPlan);
         } else {
-          console.error('Received meal plan is not an array:', data.mealPlan);
+          // console.error('Received meal plan is not an array:', data.mealPlan);
           setMealPlan([]);
         }
       } catch (error) {
@@ -111,6 +114,7 @@ const SmartMealPlanner = ({ navigation }) => {
         <Text style={styles.generateButtonText}>
           {loading ? 'Generating...' : 'Plan your Meal for this week!'}
         </Text>
+        
       </TouchableOpacity>
 
       {/* Meal Plan Display */}
@@ -131,9 +135,18 @@ const SmartMealPlanner = ({ navigation }) => {
               ))}
             </>
           ) : (
+            <View>
             <Text style={styles.noMealText}>
-              Generate a meal plan to get started!
+             Add items to pantry before continuing...
             </Text>
+            <TouchableOpacity
+        style={styles.pantryButton}
+        onPress={() => navigation.navigate('PantryPro')}
+      >
+        <Icon name="kitchen" size={24} color="white" style={styles.buttonIcon} />
+        <Text style={styles.pantryButtonText}>Go to Pantry</Text>
+      </TouchableOpacity>
+            </View>
           )}
         </ScrollView>
       )}
@@ -226,6 +239,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   copyAllButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pantryButton: {
+    backgroundColor: '#FF6B6B',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 16,
+    marginBottom: 16,
+    marginHorizontal: 36,
+    elevation: 4, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  pantryButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',

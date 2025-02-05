@@ -1,4 +1,4 @@
-
+import { SignedIn, SignedOut} from '@clerk/clerk-react'
 
 import PantryPro from './components/PantryPro';
 import CookLikeAChef from './components/CookLikeAChef';
@@ -16,17 +16,20 @@ function App() {
  
   return (
     <Router>
-    
         <Routes>
+          
           <Route path="/" element={<Startup/>}/>
+          
+          
           <Route path="/instanttimelyrecipie" element={<InstantTimelyRecipie/>}/>
-          <Route path="/pantrypro" element={<PantryPro />} />
-          <Route path="/cooklikeachef" element={<CookLikeAChef />} />
-          <Route path="/mealplan" element={<SmartMealPlanner />} />
-          <Route path="/whattocook" element={<WhatToCook />} />
-          <Route path="/cartcomp" element={<CartCompanion/>}/>
-          <Route path="/donation" element={<Donation/>} />
-          <Route path="/adoption" element={<Adoption/>}/>
+          <Route path="/pantrypro" element={<SignedIn><PantryPro /></SignedIn>} />
+          <Route path="/cooklikeachef" element={<SignedIn><CookLikeAChef /></SignedIn>} />
+          <Route path="/mealplan" element={<SignedIn><SmartMealPlanner /></SignedIn>} />
+          <Route path="/whattocook" element={<SignedIn><WhatToCook /></SignedIn>} />
+          <Route path="/cartcomp" element={<SignedIn><CartCompanion/></SignedIn>}/>
+          <Route path="/donation" element={<SignedIn><Donation/></SignedIn>} />
+          <Route path="/adoption" element={<SignedIn><Adoption/></SignedIn>}/>
+          
         </Routes>
     </Router>
   )

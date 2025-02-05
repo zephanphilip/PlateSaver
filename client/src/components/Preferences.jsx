@@ -12,6 +12,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useUser } from "@clerk/clerk-react";
+import General from "../constants/General";
 
 const Preferences = ({ isNavbarButton = false }) => {
   const { user, isLoaded } = useUser();
@@ -42,7 +43,7 @@ const Preferences = ({ isNavbarButton = false }) => {
       const fetchPreferences = async () => {
         try {
           const response = await fetch(
-            `http://localhost:3001/api/preferences/${user.id}`
+            `${General.API_BASE_URL}api/preferences/${user.id}`
           );
           if (response.ok) {
             const data = await response.json();
@@ -65,7 +66,7 @@ const Preferences = ({ isNavbarButton = false }) => {
     const fetchPreferences = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/preferences/${user.id}`
+          `${General.API_BASE_URL}api/preferences/${user.id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -97,8 +98,8 @@ const Preferences = ({ isNavbarButton = false }) => {
     const isUpdate = !!existingPreferenceId;
     console.log( isUpdate );
     const url = isUpdate
-      ? `http://localhost:3001/api/preferences/${existingPreferenceId}` // PUT URL
-      : "http://localhost:3001/api/preferences"; // POST URL
+      ? `${General.API_BASE_URL}api/preferences/${existingPreferenceId}` // PUT URL
+      : `${General.API_BASE_URL}api/preferences`; // POST URL
 
     const method = isUpdate ? "PUT" : "POST";
 
@@ -216,7 +217,6 @@ const Preferences = ({ isNavbarButton = false }) => {
               "spiceLevel"
             )}
             {renderSection("Your Cooking Time", [
-              "Under 15 mins",
               "15-30 mins",
               "30 - 60 mins",
               "1 hour or more",

@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -12,6 +15,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   StatusBar,
+  RefreshControl, // Add this import
 } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
 import * as Location from "expo-location";
@@ -32,14 +36,21 @@ const Donation = () => {
   const [error, setError] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [refreshCounter, setRefreshCounter] = useState(0);
+  const [refreshing, setRefreshing] = useState(false); // Add this state
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setRefreshCounter(prev => prev + 1);
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     (async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          Alert.alert("Permission Denied", "Permission to access location was denied.");
-          setError("Permission to access location was denied.");
+          Alert.alert("Turn on Location", "Go to Settings and turn on your location.");
+          setError("Go to Settings and turn on your location.");
         }
       } catch (error) {
         Alert.alert("Error", "Failed to request location permission.");
@@ -90,6 +101,7 @@ const Donation = () => {
         },
         body: JSON.stringify({
           userId: user?.id || "Anonymous",
+          email: user.primaryEmailAddress.emailAddress,
           foodDetails,
           quantity,
           expiryDate: expiryDate.toISOString().split("T")[0],
@@ -125,7 +137,15 @@ const Donation = () => {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView 
+          contentContainerStyle={styles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
           <View style={styles.header}>
             <Text style={styles.title}>Donate Leftover Food</Text>
           </View>
@@ -182,7 +202,8 @@ const Donation = () => {
           {location && (
             <Text style={styles.locationText}>
               Location detected, Now you can donate your food.
-              <Text style={styles.disclaimerText}>{'\n'}Note: This donation cannot be edited after submission.</Text>
+              <Text style={styles.disclaimerText}>{'\n'}Adoption & Donation Policy:
+              To maintain fairness and prevent misuse, once you accept a food adoption, you cannot cancel it. Similarly, once you submit a food donation, it cannot be revoked. This policy ensures that food commitments are honored, preventing disruptions that could negatively impact recipients, especially vulnerable groups such as old age homes. Since food is a vital resource, reliability is essential to avoid waste and ensure those in need receive the help they expect. Please commit responsibly before confirming an adoption or donation.</Text>
             </Text>
           )}
 

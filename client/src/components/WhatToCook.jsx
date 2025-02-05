@@ -7,6 +7,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/clerk-react";
 import { format } from 'date-fns';
+import General from "../constants/General";
 
 const WhatToCook = () => {
   const getCurrentTime = () => format(new Date(), 'HH:mm');
@@ -46,7 +47,7 @@ const WhatToCook = () => {
     if (isLoaded && user) {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/ai/whattocook?userId=${user.id}&mealTime=${currentMealTime}`
+          `${General.API_BASE_URL}api/ai/whattocook?userId=${user.id}&mealTime=${currentMealTime}`
         );
         
         if (!response.ok) {

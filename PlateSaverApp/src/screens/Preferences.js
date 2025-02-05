@@ -104,7 +104,7 @@ const Preferences = () => {
         value={value}
         status={selected === value ? 'checked' : 'unchecked'}
         onPress={() => onSelect(value)}
-        color="#43018f"
+        color="#FF6B6B"
       />
       <Text style={styles.radioLabel}>{value}</Text>
     </TouchableOpacity>
@@ -162,7 +162,7 @@ const Preferences = () => {
           )}
           
           {renderSection('Your Cooking Time', [
-            'Under 15 mins',
+            
             '15-30 mins',
             '30 - 60 mins',
             '1 hour or more',
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 16,
-    backgroundColor: '#43018f',
+    backgroundColor: '#FF6B6B',
     alignItems: 'center',
   },
   headerTitle: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   saveButton: {
-    backgroundColor: '#43018f',
+    backgroundColor: '#FF6B6B',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',

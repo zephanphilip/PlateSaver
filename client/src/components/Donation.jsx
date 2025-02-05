@@ -71,7 +71,7 @@ const Donation = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/donate", {
+      const response = await fetch(`${General.API_BASE_URL}api/donate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -232,7 +232,8 @@ const Donation = () => {
                       textAlign: "center"
                     }}
                   >
-                    Note : You cannot CANCEL an Donation after you have submitted it.
+                   Adoption & Donation Policy:
+                   To maintain fairness and prevent misuse, once you accept a food adoption, you cannot cancel it. Similarly, once you submit a food donation, it cannot be revoked. This policy ensures that food commitments are honored, preventing disruptions that could negatively impact recipients, especially vulnerable groups such as old age homes. Since food is a vital resource, reliability is essential to avoid waste and ensure those in need receive the help they expect. Please commit responsibly before confirming an adoption or donation.
                   </Typography>
         <Button
           variant="contained"

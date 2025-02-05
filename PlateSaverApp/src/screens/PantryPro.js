@@ -38,12 +38,14 @@ const PantryPro = () => {
   const [newItem, setNewItem] = useState(initialFormState);
 
   const categories = [
-    'Fruits & Vegetables',
-    'Dairy & Eggs',
-    'Grains & Cereals',
-    'Meat & Fish',
-    'Packaged Foods',
-    'Condiments & Spices',
+    "Fruits & Vegetables", 
+    "Dairy & Eggs", 
+    "Grains & Cereals",
+     "Meat & Fish", 
+     "Packaged Foods", 
+     "Beverages",
+     "Condiments & Spices",
+    "Others"
   ];
 
   const determineItemStatus = (expiryDate) => {
@@ -177,7 +179,6 @@ const resetForm = () => {
       <TextInput
         style={styles.input}
         placeholder="Quantity"
-        keyboardType="numeric"
         value={newItem.quantity}
         onChangeText={text => setNewItem(prev => ({ ...prev, quantity: text }))}
       />
@@ -253,7 +254,7 @@ const resetForm = () => {
     >
       <Text style={styles.itemName}>{item.name}</Text>
       <Text style={styles.itemDetails}>Quantity: {item.quantity}</Text>
-      <Text style={styles.itemDetails}>Expires: {item.expires}</Text>
+      <Text style={styles.itemDetails}>{item.status === "expired" ? "Expired" : `Expiry Date: ${new Date(item.expires).toLocaleDateString('en-GB')}`}</Text>
       
       <View style={styles.itemActions}>
         <TouchableOpacity 

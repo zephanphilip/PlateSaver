@@ -18,7 +18,9 @@ export default function Profile() {
           source={{ uri: user?.imageUrl }}
         />
         <Text style={styles.userName}>Hello, {user?.fullName}!</Text>
+        <View style={styles.emailHighlightSection}>
         <Text style={styles.detailText}>{user?.emailAddresses[0].emailAddress}</Text>
+        </View>
       </View>
 
       <View style={styles.appHighlightSection}>
@@ -63,7 +65,14 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 16,
-    color: 'black',
+    color: 'white',
+  },
+  emailHighlightSection: {
+    backgroundColor: 'black',
+    borderRadius: 10,
+    padding: 5,
+    marginHorizontal: 10,
+    marginTop: 30,
   },
   appHighlightSection: {
     backgroundColor: 'black',
