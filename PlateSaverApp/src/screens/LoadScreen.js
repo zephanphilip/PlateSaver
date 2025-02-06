@@ -3,27 +3,27 @@ import { StyleSheet, Text, View, SafeAreaView, Image } from "react-native";
 import React, {useEffect} from 'react'
 import { Images } from "../constants";
 import { Display } from "../utils";
+import { useNavigation } from '@react-navigation/native';
 
-
-const SplashScreen = ({navigation}) => {
- 
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate('Welcome')
-    },2000)
-  },[])
+export default function LoadScreen() {
+      const navigation = useNavigation();
+    useEffect(() => {
+        setTimeout(() => {
+          navigation.navigate('HomeScreen')
+        },2000)
+      },[])
   return (
     <SafeAreaView style={styles.outerContainer}>
-      <StatusBar barStyle="dark-content"/>
-      <View style={styles.container}>
-      <Image
-      source={Images.LOGO}
-      resizeMode="contain"
-      style={styles.image}
-      />
-      </View>
-      <Text style={styles.text}>Welcome to Plate Saver</Text>
-    </SafeAreaView>
+         <StatusBar barStyle="dark-content"/>
+         <View style={styles.container}>
+         <Image
+         source={Images.LOGO}
+         resizeMode="contain"
+         style={styles.image}
+         />
+         </View>
+         <Text style={styles.text}>Loading</Text>
+       </SafeAreaView>
   )
 }
 
@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
       alignItems: "center",
     },
     image:{
-        height: Display.setHeight(60),
-        width: Display.setWidth(60),
+        height: Display.setHeight(30),
+        width: Display.setWidth(30),
     },
     text:{
         textAlign: "center",
@@ -48,5 +48,3 @@ const styles = StyleSheet.create({
 
     }
   });
-  
-export default SplashScreen

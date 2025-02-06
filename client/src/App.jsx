@@ -23,7 +23,7 @@ function App() {
           
           <Route path="/instanttimelyrecipie" element={<InstantTimelyRecipie/>}/>
           <Route path="/pantrypro" element={<SignedIn><PantryPro /></SignedIn>} />
-          <Route path="/cooklikeachef" element={<SignedIn><CookLikeAChef /></SignedIn>} />
+          <Route path="/cooklikeachef" element={<CookLikeAChef />} />
           <Route path="/mealplan" element={<SignedIn><SmartMealPlanner /></SignedIn>} />
           <Route path="/whattocook" element={<SignedIn><WhatToCook /></SignedIn>} />
           <Route path="/cartcomp" element={<SignedIn><CartCompanion/></SignedIn>}/>

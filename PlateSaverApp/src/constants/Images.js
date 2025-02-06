@@ -1,5 +1,5 @@
 export default {
-    LOGO: require('../assets/images/logo.png'),
+    LOGO: require('../assets/images/logo-platesaver.png'),
     w1: require('../assets/images/chef.png'),
     donation: require('../assets/images/donate-icon.png'),
     notification: require('../assets/images/notification-icon.png'),

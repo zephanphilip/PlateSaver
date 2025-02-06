@@ -14,7 +14,7 @@ import {
   Box
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo-platesaver.png';
 import Preferences from './Preferences';
 import { useNavigate } from 'react-router-dom';
 
@@ -115,7 +115,7 @@ const Navbar = () => {
           <img 
             src={logo} 
             alt="Logo" 
-            height="40" 
+            height="70" 
             style={{ cursor: 'pointer' }}
             onClick={() => navigate('/')}
           />

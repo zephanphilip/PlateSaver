@@ -107,7 +107,7 @@ const Menus = () => {
       desc: 'Manage your shopping list and be ready for grocery runs',
       img: pantrypro,
       route: '/cartcomp',
-    }
+    },
   ];
 
   const handleMenuClick = (route) => {

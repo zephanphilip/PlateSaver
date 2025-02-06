@@ -6,7 +6,7 @@ import { SignedIn, SignedOut } from '@clerk/clerk-expo'
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Auth, SplashScreen, WelcomeScreen, Profile, Donation } from "../screens";
+import { Auth, SplashScreen, WelcomeScreen, Profile, Donation, LoadScreen } from "../screens";
 import { StyleSheet, Text } from 'react-native';
 import { Display } from '../utils';
 import HomeStack from './HomeStack';
@@ -54,6 +54,7 @@ const Navigators = () => {
             </SignedOut>
 
             <SignedIn>
+                
             <Tab.Navigator
   screenOptions={({ route }) => ({
     headerShown: false,
@@ -140,3 +141,4 @@ const styles = StyleSheet.create({
 });
 
 export default Navigators;
+

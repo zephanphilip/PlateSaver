@@ -1,7 +1,7 @@
 
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react'
-import { Home,CookLikeAChef, WhatToCook, SmartMealPlanner, CartCompanion, PantryPro, InstantRecipie, Preferences, Donation } from "../screens";
+import { Home,CookLikeAChef, WhatToCook, SmartMealPlanner, CartCompanion, PantryPro, InstantRecipie, Preferences, Donation, LoadScreen } from "../screens";
 import TimelyRecipieScreen from '../screens/TimelyRecipieScreen';
 
 const Stack = createStackNavigator();

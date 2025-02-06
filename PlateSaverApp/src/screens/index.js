@@ -11,6 +11,7 @@ import PantryPro from "./PantryPro";
 import SmartMealPlanner from "./SmartMealPlanner";
 import InstantRecipie from "./InstantRecipie";
 import Preferences from "./Preferences";
+import LoadScreen from "./LoadScreen";
 
 
-export { SplashScreen, WelcomeScreen, Auth, Home, Profile, Donation, CookLikeAChef, WhatToCook, CartCompanion, PantryPro, SmartMealPlanner, InstantRecipie, Preferences};
+export {LoadScreen, SplashScreen, WelcomeScreen, Auth, Home, Profile, Donation, CookLikeAChef, WhatToCook, CartCompanion, PantryPro, SmartMealPlanner, InstantRecipie, Preferences};
