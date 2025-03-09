@@ -13,6 +13,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useUser } from "@clerk/clerk-react";
 import UserDonations from "./UserDonations";
+import General from "../constants/General";
 
 const Donation = () => {
   const { user, isLoaded } = useUser();
@@ -196,7 +197,8 @@ const Donation = () => {
         <TextField
           variant="outlined"
           label="Quantity"
-          placeholder="E.g., 5"
+          type="number"
+          placeholder="E.g., 5 box"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           fullWidth
